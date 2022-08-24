@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">.
+    <title>Document</title>
+    <link rel="stylesheet" href="/static/index.css">
+</head>
+<body>
+    <div class="card">
+        <h2>Encryption-Decryption</h2>
+        <div class="row">
+            <form method="post" id="form-1">
+              <input type="hidden" name="action" id="action">
+                <div class="col key1-label">
+                    <label>ENTER THE FIRST KEY</label>
+                </div>
+                <div class="col key1-input">
+                    <input type="text" id="key1" name="key1" placeholder="Enter first key" required>
+                </div>
+                <div class="line key1-line-key2"></div>
+                <div class="col key2-label">
+                    <label>ENTER THE SECOND KEY</label>
+                </div>
+                <div class="col key2-input">
+                    <input type="text" id="key2" name="key2" placeholder="Enter second key" required>
+                </div>
+                <div class="line"></div>
+                <div class="col hide text-label-div">
+                    <label class="text-label">ENTER PLAIN TEXT</label>
+                </div>
+                <div class="col hide text-input">
+                    <input type="text"  id="text" name="text" placeholder="Enter plain text" required>
+                </div>
+                <div class="line"></div>
+                <div class="col button1-div">
+                    <button type="button" id="button1" >Encryption</button>
+                </div>
+                <div class="line"></div>
+                <div class="col button2-div">
+                    <button type="button" id="button2" >Decryption</button>
+                </div> 
+                <div class="line"></div>
+                <div class="col submit-btn-div hide">
+                    <button type="button" id="submit-btn" >Encryption</button>
+                </div>
+
+
+                <div class="line"></div>
+                <div class="col result-text-div hide">
+                    <label class="result-text-label"></label>
+                </div>
+                <div class="col result-text-input hide">
+                    <input type="text"  id="result-text"   disabled>
+                </div>   
+            </form>
+        
+    
+        </div>
+    </div>
+
+
+    <script>
+      var button1 = document.querySelector("#button1");
+      var button2 = document.querySelector("#button2");
+      var button2_div = document.querySelector(".button2-div");
+      var button1_div = document.querySelector(".button1-div");
+      var text_label_div = document.querySelector(".text-label-div");
+      var text_label = document.querySelector(".text-label");
+      var text_input = document.querySelector(".text-input");
+      var key1_label = document.querySelector(".key1-label");
+      var key1_input = document.querySelector(".key1-input");
+      var key2_label = document.querySelector(".key2-label");
+      var key2_input = document.querySelector(".key2-input");
+      var key1_line_key2 = document.querySelector('.key1-line-key2');
+      var submit_btn_div = document.querySelector(".submit-btn-div");
+      var submit_btn = document.querySelector("#submit-btn");
+      var result_text_div = document.querySelector(".result-text-div");
+      var result_text_label = document.querySelector(".result-text-label");
+      var result_text_input = document.querySelector(".result-text-input");
+      var result_text = document.querySelector("#result-text");
+      var text = document.querySelector("#text");
+      var key1_field = document.querySelector("#key1");
+      var key2_field = document.querySelector("#key2");
+
+
+      // console.log(submit_btn)
+      var fm = document.querySelector('#form-1');
+
+      button1.addEventListener('click',function(){
+        if (key1_field.value=="" || key2_field.value==""){
+          alert("All fields are required")
+        }
+        else{
+        button2_div.classList.add('hide');
+        text_label_div.classList.remove('hide');
+        text_input.classList.remove("hide");
+        key1_label.classList.add('hide');
+        key1_input.classList.add('hide');
+        key1_line_key2.classList.add('hide');
+        key2_label.classList.add('hide');
+        key2_input.classList.add('hide');
+        button1.classList.add('hide');
+        submit_btn_div.classList.remove('hide');
+        fm.elements.action.value='en';
+      }
+      })
+
+      button2.addEventListener('click',function(){
+        if (key1_field.value=="" || key2_field.value==""){
+          alert("All fields are required")
+        }
+        else{
+        button1_div.classList.add('hide');
+        text_label_div.classList.remove('hide');
+        text_input.classList.remove("hide");
+        key1_label.classList.add('hide');
+        key1_input.classList.add('hide');
+        key1_line_key2.classList.add('hide');
+        key2_label.classList.add('hide');
+        key2_input.classList.add('hide');
+        button2.classList.add('hide');
+        text_label.innerHTML='ENTER ENCRYPTED TEXT'
+        text.setAttribute('placeholder','Enter Encrypted Text')
+        submit_btn_div.classList.remove('hide');
+        submit_btn.innerHTML='Decryption';
+        fm.elements.action.value='dy';
+      }
+      })
+
+      submit_btn.addEventListener('click',function(){
+
+
+        let key1 = fm.elements.key1.value;
+        let  key2 = fm.elements.key2.value;
+        let text = fm.elements.text.value;
+        let action = fm.elements.action.value
+        if (text==""){alert("All fileds are required.")}
+        else{
+        obj={
+          key1:key1,
+          key2:key2,
+          text:text,
+          action:action
+        }
+        
+        fetch(`/api/`, {
+          method: "POST",
+          body: JSON.stringify(obj),
+        })
+          .then((resp) => {
+            return resp.json();
+          })
+          .then((resp_data) => {
+              console.log(resp_data);
+              result_text_div.classList.remove('hide');
+              if (resp_data.action=='en'){
+              result_text_label.innerHTML='Encrypted Text';}
+              else{result_text_label.innerHTML='Dycrypted Text';}
+              result_text_input.classList.remove('hide');
+              result_text.value=resp_data.result;
+              fm.elements.key1.value='';
+              fm.elements.key2.value='';
+              fm.elements.text.value='';
+              
+          })
+        }
+      })
+    </script>
+</body>
+</html>
